@@ -21,11 +21,13 @@ Meta-evolution of migration graphs for genetic algorithms on deceptive landscape
 | File | Description |
 |------|-------------|
 | `trap_domain.py` | Goldberg concatenated k-trap fitness function (k=3,5,7) |
+| `hiff_domain.py` | Watson & Pollack HIFF (hierarchical deception) |
 | `run_traps.py` | Topology sweep on trap functions (experiment E compatible) |
+| `run_hiff.py` | Topology sweep + graph evolution on HIFF |
 | `dynamic_topology.py` | Hand-designed topology schedules (sparse→dense) |
 | `evolve_graph.py` | **Outer GA evolving migration graphs** |
 | `FITNESS_INVERSION.md` | Write-up: diversity vs fitness ordering on deceptive landscapes |
-| `EVOLVED_GRAPHS.md` | Write-up: evolved graph structures and cross-scale patterns |
+| `EVOLVED_GRAPHS.md` | Write-up: evolved graph structures and cross-domain patterns |
 
 ## Usage
 

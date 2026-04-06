@@ -185,12 +185,89 @@ The ~50% density, moderate λ₂, and heterogeneous degree distribution
 are robust across both n=5 and n=8. The advantage over FC grows
 with n (from +0.005 at n=5 to +0.009 at n=8 for k=5).
 
+## Results (HIFF — hierarchical deception, n=5 islands)
+
+HIFF (Watson & Pollack 1998): 64-bit genome (L=6), fitness rewards
+matching bits at every level of a binary tree. Deception is hierarchical —
+building blocks must consolidate at each level before assembling at the
+next level up. 300 inner generations.
+
+### Topology sweep: a third fitness ordering
+
+| Topology | Diversity | Best Fitness | Solved |
+|----------|-----------|-------------|--------|
+| none | 0.419 | 0.695 | 1/30 |
+| fc | 0.078 | 0.723 | 1/30 |
+| star | 0.096 | 0.743 | 3/30 |
+| ring | 0.110 | 0.746 | 1/30 |
+| random | 0.092 | 0.751 | 2/30 |
+
+Fitness ordering: **random > ring > star > FC > none**
+
+This is neither the honest ordering (diversity helps) nor the trap
+inversion (FC wins). FC's aggressive mixing destroys hierarchical
+building blocks before they consolidate. Ring/random provide a
+Goldilocks zone of exchange.
+
+### Evolved graph
+
+| Topology | Edges | λ₂ | Best Fitness | Std |
+|----------|-------|-----|-------------|-----|
+| none | 0 | 0.000 | 0.695 | 0.066 |
+| fc | 10 | 5.000 | 0.723 | 0.081 |
+| star | 4 | 1.000 | 0.743 | 0.100 |
+| ring | 5 | 1.382 | 0.746 | 0.097 |
+| **evolved** | **5** | **0.519** | **0.763** | 0.110 |
+
+Evolved graph structure:
+```
+    1 --- 0 --- 3 --- 4   (pendant)
+          |
+          2
+
+Edges: (0,1) (0,2) (0,3) (1,2) (3,4)
+Degrees: [3, 2, 2, 2, 1]
+```
+
+Sparser than ring (λ₂=0.52 vs 1.38) but with a triangle (0-1-2) for
+local consolidation and a pendant (node 4) for diversity preservation.
+
+## Cross-Domain Comparison
+
+The evolved graph adapts its *density* to the landscape while maintaining
+the same *structural motifs*.
+
+| Domain | Best Fixed | Evolved Fit | Evolved λ₂ | Density | Pendant? |
+|--------|-----------|-------------|------------|---------|----------|
+| Trap-5 (n=5) | FC: 0.910 | **0.915** | 1.38 | 60% | No |
+| Trap-7 (n=5) | FC: 0.891 | **0.893** | 0.83 | 60% | Yes |
+| Trap-5 (n=8) | FC: 0.932 | **0.941** | 0.82 | 50% | Yes |
+| HIFF (n=5) | Ring: 0.746 | **0.763** | 0.52 | 50% | Yes |
+
+Consistent structural features:
+- **Pendant vertices** in 4/5 runs — semi-isolated diversity reservoirs
+- **Triangle clusters** — local exchange zones for building block consolidation
+- **Asymmetric degree distribution** — hubs + pendants, never vertex-transitive
+- **Density adapts to deception type**: dense for flat traps (need assembly),
+  sparse for hierarchical HIFF (need consolidation time)
+
+### Three fitness orderings, one diversity ordering
+
+| Ordering | Honest | Traps (flat deception) | HIFF (hierarchical) |
+|----------|--------|----------------------|---------------------|
+| **Diversity** | none>ring>star>random>FC | none>ring>star>random>FC | none>ring>star>random>FC |
+| **Fitness** | diversity helps | FC wins (assembly) | ring/random win (Goldilocks) |
+
+The diversity ordering is a structural invariant (determined by λ₂).
+The fitness ordering depends on how that diversity interacts with the
+landscape's deceptive structure.
+
 ## Open Questions
 
 1. **Scaling further**: At n=12 or n=16 does the gap keep growing?
 2. **Honest landscapes**: On OneMax/knapsack, does the evolved graph
-   differ from what's optimal on traps?
-3. **Pendant vertices**: They appear in 3/4 runs — is this a robust
-   structural motif or noise?
-4. **Inner GA length**: k=7 may need >200 inner generations to
-   differentiate topologies at larger n.
+   differ from what's optimal on deceptive landscapes?
+3. **The triangle+pendant motif**: Why does this architecture emerge
+   across different deception types? Is there a spectral characterization?
+4. **MMDP**: Multiple deceptive attractors per block — does this change
+   the evolved topology?
