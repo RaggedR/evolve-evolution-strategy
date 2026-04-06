@@ -341,10 +341,35 @@ the same *structural motifs*.
 | Overlap (n=5) | Star: 0.843 | 0.837 | 0.83 | 6 | Yes |
 
 The evolved graph beats all canonical topologies on traps and HIFF,
-ties on MMDP, and slightly loses on overlapping traps. Structural
-motifs are consistent across all six runs:
+ties on MMDP, and slightly loses on overlapping traps.
 
-- **6 edges at n=5** (5/6 runs) — ~50–60% density
+### The isomorphism result
+
+The three graphs evolved for Trap-7, MMDP, and overlapping traps are
+**isomorphic** — the same graph up to node relabeling. Out of 1,024
+possible graphs on 5 vertices, the outer GA independently converged to
+the same topology on three different deceptive landscapes.
+
+This graph has degree sequence {1, 2, 3, 3, 3}, λ₂ = 0.83, and consists
+of a triangle with one extra edge and one pendant vertex:
+
+```
+    △ + edge + pendant
+```
+
+The two exceptions adapt density to the deception type:
+- **Trap-5** (λ₂=1.38): one more edge, no pendant — flat deception
+  needs slightly more connectivity for building block assembly
+- **HIFF** (λ₂=0.52): one fewer edge — hierarchical deception needs
+  slower mixing for level-by-level consolidation
+
+So there are really **three evolved topologies**: a dense variant
+(Trap-5), the default graph (Trap-7/MMDP/Overlap, λ₂=0.83), and a
+sparse variant (HIFF). The default is the "universal good topology"
+for deceptive landscapes.
+
+### Structural motifs (all runs)
+
 - **Pendant vertex** (5/6 runs) — semi-isolated diversity reservoir
 - **Triangle cluster** (6/6 runs) — local consolidation zone
 - **Asymmetric degree distribution** (6/6 runs) — never vertex-transitive
