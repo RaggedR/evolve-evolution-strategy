@@ -232,35 +232,136 @@ Degrees: [3, 2, 2, 2, 1]
 Sparser than ring (λ₂=0.52 vs 1.38) but with a triangle (0-1-2) for
 local consolidation and a pendant (node 4) for diversity preservation.
 
+## Results (MMDP — multimodal deception, n=5 islands)
+
+MMDP (Goldberg, Deb & Horn 1992): 60-bit genome (10 blocks × 6 bits).
+Each block has two global optima (all-zeros, all-ones) and a strong
+deceptive attractor at unitation 3 (fitness 0.64). Four deceptive basins
+pull search toward the attractor from both sides.
+
+### Topology sweep
+
+| Topology | Diversity | Best Fitness | Solved |
+|----------|-----------|-------------|--------|
+| none | 0.422 | 0.817 | 0/30 |
+| ring | 0.205 | 0.921 | 0/30 |
+| star | 0.180 | 0.940 | 4/30 |
+| random | 0.156 | 0.943 | 3/30 |
+| fc | 0.133 | 0.939 | 3/30 |
+
+Fitness ordering: **random > star > FC > ring > none**
+
+Mid-connectivity wins. Unlike traps (FC best) or HIFF (ring best),
+MMDP favours random and star — enough mixing to escape the attractor
+but not so much that it disrupts the two-peaked block structure.
+
+### Evolved graph
+
+| Topology | Edges | λ₂ | Best Fitness | Std |
+|----------|-------|-----|-------------|-----|
+| none | 0 | 0.000 | 0.817 | 0.037 |
+| fc | 10 | 5.000 | 0.939 | 0.043 |
+| star | 4 | 1.000 | 0.940 | 0.032 |
+| ring | 5 | 1.382 | 0.941 | 0.029 |
+| **evolved** | **6** | **0.830** | **0.939** | 0.033 |
+
+Evolved graph structure:
+```
+    3 --- 4 --- 0 --- 1
+              |     /
+              2 ---
+
+Edges: (0,1) (0,2) (0,4) (1,2) (2,4) (3,4)
+Degrees: [3, 2, 3, 1, 3]  ← node 3 is a pendant
+```
+
+On MMDP the evolved graph ties with FC/star but doesn't beat
+random — the noisy fitness evaluation (5 inner seeds) limits the
+outer GA's ability to distinguish close-performing topologies.
+
+## Results (Overlapping Traps — inter-block epistasis, n=5 islands)
+
+Overlapping traps: k=5 with overlap=2, 10 blocks, 32-bit genome.
+Adjacent blocks share 2 bits, creating inter-block epistasis —
+solving one block can disrupt its neighbor.
+
+### Topology sweep
+
+| Topology | Diversity | Best Fitness | Solved |
+|----------|-----------|-------------|--------|
+| none | 0.301 | 0.816 | 0/30 |
+| ring | 0.170 | 0.830 | 1/30 |
+| star | 0.169 | 0.843 | 2/30 |
+| random | 0.144 | 0.831 | 2/30 |
+| fc | 0.134 | 0.835 | 1/30 |
+
+Fitness ordering: **star > FC > random > ring > none**
+
+Star topology wins — the hub-spoke structure may help coordinate
+shared bits across blocks by routing all exchange through a single
+island.
+
+### Evolved graph
+
+| Topology | Edges | λ₂ | Best Fitness | Std |
+|----------|-------|-----|-------------|-----|
+| none | 0 | 0.000 | 0.816 | 0.020 |
+| fc | 10 | 5.000 | 0.835 | 0.053 |
+| ring | 5 | 1.382 | 0.845 | 0.055 |
+| star | 4 | 1.000 | 0.843 | 0.051 |
+| **evolved** | **6** | **0.830** | **0.837** | 0.060 |
+
+Evolved graph structure:
+```
+    4 --- 0     1
+          |   / |
+          3 --- 2
+
+Edges: (0,2) (0,3) (0,4) (1,2) (1,3) (2,3)
+Degrees: [3, 2, 3, 3, 1]  ← node 4 is a pendant
+```
+
+On overlapping traps the evolved graph underperforms ring and star
+on 30-seed comparison. The inter-block epistasis may require a
+qualitatively different topology (perhaps directed or weighted edges)
+that our binary adjacency genome cannot express.
+
 ## Cross-Domain Comparison
 
 The evolved graph adapts its *density* to the landscape while maintaining
 the same *structural motifs*.
 
-| Domain | Best Fixed | Evolved Fit | Evolved λ₂ | Density | Pendant? |
-|--------|-----------|-------------|------------|---------|----------|
-| Trap-5 (n=5) | FC: 0.910 | **0.915** | 1.38 | 60% | No |
-| Trap-7 (n=5) | FC: 0.891 | **0.893** | 0.83 | 60% | Yes |
-| Trap-5 (n=8) | FC: 0.932 | **0.941** | 0.82 | 50% | Yes |
-| HIFF (n=5) | Ring: 0.746 | **0.763** | 0.52 | 50% | Yes |
+| Domain | Best Fixed | Evolved Fit | Evolved λ₂ | Edges | Pendant? |
+|--------|-----------|-------------|------------|-------|----------|
+| Trap-5 (n=5) | FC: 0.910 | **0.915** | 1.38 | 6 | No |
+| Trap-7 (n=5) | FC: 0.891 | **0.893** | 0.83 | 6 | Yes |
+| Trap-5 (n=8) | FC: 0.932 | **0.941** | 0.82 | 14 | Yes |
+| HIFF (n=5) | Ring: 0.746 | **0.763** | 0.52 | 5 | Yes |
+| MMDP (n=5) | Random: 0.943 | 0.939 | 0.83 | 6 | Yes |
+| Overlap (n=5) | Star: 0.843 | 0.837 | 0.83 | 6 | Yes |
 
-Consistent structural features:
-- **Pendant vertices** in 4/5 runs — semi-isolated diversity reservoirs
-- **Triangle clusters** — local exchange zones for building block consolidation
-- **Asymmetric degree distribution** — hubs + pendants, never vertex-transitive
-- **Density adapts to deception type**: dense for flat traps (need assembly),
-  sparse for hierarchical HIFF (need consolidation time)
+The evolved graph beats all canonical topologies on traps and HIFF,
+ties on MMDP, and slightly loses on overlapping traps. Structural
+motifs are consistent across all six runs:
 
-### Three fitness orderings, one diversity ordering
+- **6 edges at n=5** (5/6 runs) — ~50–60% density
+- **Pendant vertex** (5/6 runs) — semi-isolated diversity reservoir
+- **Triangle cluster** (6/6 runs) — local consolidation zone
+- **Asymmetric degree distribution** (6/6 runs) — never vertex-transitive
+- **λ₂ ≈ 0.5–1.4** — moderate algebraic connectivity
 
-| Ordering | Honest | Traps (flat deception) | HIFF (hierarchical) |
-|----------|--------|----------------------|---------------------|
-| **Diversity** | none>ring>star>random>FC | none>ring>star>random>FC | none>ring>star>random>FC |
-| **Fitness** | diversity helps | FC wins (assembly) | ring/random win (Goldilocks) |
+### Five fitness orderings, one diversity ordering
 
-The diversity ordering is a structural invariant (determined by λ₂).
+| Ordering | Honest | Traps | HIFF | MMDP | Overlap |
+|----------|--------|-------|------|------|---------|
+| **Diversity** | none>ring>star>rnd>FC | same | same | same | same |
+| **Fitness** | diversity helps | FC wins | ring/rnd win | rnd/star win | star wins |
+
+The diversity ordering is a **structural invariant** (determined by λ₂).
 The fitness ordering depends on how that diversity interacts with the
-landscape's deceptive structure.
+landscape's deceptive structure. This is the central finding: topology
+determines diversity universally, but the *value* of that diversity
+is problem-dependent — which is exactly why evolving the topology matters.
 
 ## Open Questions
 
@@ -268,6 +369,10 @@ landscape's deceptive structure.
 2. **Honest landscapes**: On OneMax/knapsack, does the evolved graph
    differ from what's optimal on deceptive landscapes?
 3. **The triangle+pendant motif**: Why does this architecture emerge
-   across different deception types? Is there a spectral characterization?
-4. **MMDP**: Multiple deceptive attractors per block — does this change
-   the evolved topology?
+   across all deception types? Is there a spectral characterization?
+4. **Richer graph genomes**: Directed edges, weighted edges, or
+   time-varying topologies might help on domains like overlapping traps
+   where the binary adjacency genome underperforms.
+5. **More inner seeds**: The outer GA uses 5 inner seeds per evaluation,
+   which creates noisy fitness estimates. Would 10–20 seeds improve
+   the evolved topology on MMDP and overlapping traps?
