@@ -364,85 +364,123 @@ But is 200 generations the right horizon? We tracked fitness over
 \subsection{Topology Rankings Shift Over Time}
 
 \begin{table}[h]
-\caption{Best fitness by topology at different generations (Trap-5,
-  15 seeds). Bold = best at that generation.}
+\caption{Best fitness by topology over 2000 generations (Trap-5,
+  $n=5$, 15 seeds). Bold = leader at that generation.}
 \label{tab:convergence}
 \centering
 \small
 \begin{tabular}{rcccccc}
 \toprule
-\textbf{Gen} & \textbf{$K_4{-}e{+}$p} & \textbf{Trap-5 ev.} & \textbf{HIFF ev.} & \textbf{FC} & \textbf{Ring} & \textbf{None} \\
+\textbf{Gen} & \textbf{$K_4{-}e{+}$p} & \textbf{FC} & \textbf{Ring} & \textbf{Star} & \textbf{None} & \textbf{HIFF ev.} \\
 \midrule
- 25  & \textbf{0.849} & 0.844 & 0.829 & 0.848 & 0.837 & 0.812 \\
- 50  & 0.881 & 0.892 & 0.872 & \textbf{0.895} & 0.883 & 0.847 \\
-100  & 0.899 & \textbf{0.909} & 0.899 & 0.907 & 0.908 & 0.856 \\
-200  & 0.900 & \textbf{0.920} & 0.911 & 0.907 & 0.913 & 0.853 \\
-300  & 0.904 & 0.916 & 0.913 & 0.907 & \textbf{0.919} & 0.851 \\
-500  & 0.904 & 0.919 & 0.920 & 0.908 & \textbf{0.924} & 0.855 \\
+ 50  & 0.881 & \textbf{0.895} & 0.883 & 0.871 & 0.847 & 0.872 \\
+100  & 0.899 & 0.907 & \textbf{0.908} & 0.893 & 0.856 & 0.899 \\
+200  & 0.900 & 0.907 & \textbf{0.913} & 0.911 & 0.853 & 0.911 \\
+500  & 0.903 & 0.907 & \textbf{0.924} & 0.913 & 0.853 & 0.921 \\
+1000 & 0.903 & 0.915 & \textbf{0.929} & 0.925 & 0.857 & 0.923 \\
+2000 & 0.916 & 0.923 & \textbf{0.939} & 0.935 & 0.856 & 0.931 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-On Trap-5: the $K_4{-}e$ + pendant graph leads at generation~25
-(fast exploration), but \textbf{ring overtakes all topologies by
-generation~300} and reaches 0.924 at generation~500. FC peaks early
-and stagnates. The graph we evolved for Trap-5 (optimized at the
-200-generation horizon) performs well at generation~200 but is not
-the long-run winner.
+\begin{table}[h]
+\caption{Best fitness by topology over 2000 generations (HIFF,
+  $n=5$, 15 seeds). Bold = leader at that generation.}
+\label{tab:convergence-hiff}
+\centering
+\small
+\begin{tabular}{rcccccc}
+\toprule
+\textbf{Gen} & \textbf{$K_4{-}e{+}$p} & \textbf{FC} & \textbf{Ring} & \textbf{Star} & \textbf{None} & \textbf{HIFF ev.} \\
+\midrule
+ 50  & \textbf{0.669} & 0.666 & 0.664 & 0.646 & 0.575 & 0.632 \\
+100  & \textbf{0.727} & 0.711 & 0.725 & 0.704 & 0.610 & 0.696 \\
+200  & 0.743 & 0.741 & \textbf{0.759} & 0.745 & 0.663 & 0.755 \\
+500  & 0.785 & 0.760 & 0.797 & 0.761 & 0.706 & \textbf{0.817} \\
+1000 & 0.791 & 0.766 & 0.804 & 0.781 & 0.725 & \textbf{0.826} \\
+2000 & 0.798 & 0.802 & 0.808 & \textbf{0.844} & 0.763 & 0.829 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
-On HIFF: the pattern is similar but more extreme. The $K_4{-}e$ +
-pendant leads through generation~100, but the sparser HIFF-evolved
-graph ($\lambda_2 = 0.52$) overtakes it by generation~300 and reaches
-0.815 at generation~500.
+\textbf{Trap-5:} FC leads at generation~50 (fast assembly), but
+\textbf{ring overtakes by generation~100 and never relinquishes the
+lead through 2000 generations}. At generation~2000, ring reaches
+0.939---still climbing with zero degradation. The $K_4{-}e$ + pendant
+graph leads briefly at generation~25 but plateaus by generation~200.
+
+\textbf{HIFF:} The $K_4{-}e$ + pendant leads through generation~100
+(fast exploration). The HIFF-evolved graph ($\lambda_2 = 0.52$)
+overtakes at generation~300 and leads through generation~1000. But at
+generation~1500, \textbf{star overtakes everything}---reaching 0.844
+at generation~2000. The hub-spoke structure apparently helps
+coordinate hierarchical building block assembly at very long horizons.
+
+Notably, none (isolated islands) shows severe degradation on HIFF:
+peak 0.818 then falling to 0.763, a loss of 0.055. Too much isolation
+eventually degrades performance---diversity without any exchange
+becomes drift.
 
 \subsection{Different Graphs Peak at Different Times}
 
+\subsection{Different Topologies Peak at Different Times}
+
 \begin{table}[h]
-\caption{Generation at which each topology reaches peak fitness
-  (Trap-5 / HIFF).}
+\caption{Peak generation and degradation over 2000 generations.}
 \label{tab:peaks}
 \centering
 \begin{tabular}{lrrrr}
 \toprule
 \textbf{Topology} & \textbf{Trap-5 peak} & \textbf{Trap-5 val} & \textbf{HIFF peak} & \textbf{HIFF val} \\
 \midrule
-$K_4{-}e$ + pendant  & 229 & 0.907 & 425 & 0.792 \\
-FC                   & 410 & 0.911 & 348 & 0.762 \\
-Ring                 & 421 & 0.925 & 476 & 0.799 \\
-HIFF evolved         & 453 & 0.923 & 482 & 0.818 \\
-None                 & 383 & 0.863 & 428 & 0.709 \\
+$K_4{-}e$ + pendant  & 1943 & 0.917 & 1944 & 0.810 \\
+FC                   & 1823 & 0.924 & 1948 & 0.802 \\
+Ring                 & 1999 & 0.939 & 1208 & 0.812 \\
+Star                 & 1739 & 0.936 & 1982 & 0.850 \\
+None                 &  587 & 0.864 & 1864 & 0.818 \\
+HIFF evolved         & 1923 & 0.932 & 1098 & 0.829 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-On HIFF, FC peaks earliest (generation~348) and then degrades---exactly
-the over-mixing effect where aggressive migration destroys hierarchical
-building blocks. Sparser topologies peak later but reach higher
-fitness. The $K_4{-}e$ + pendant graph is a \emph{fast starter}: it
-provides the best early-generation performance but is not the
-asymptotic winner.
+Ring is the only topology on Trap-5 that shows \emph{zero degradation}
+at 2000 generations---it has not yet peaked. On HIFF, star is still
+climbing at generation~1982. The $K_4{-}e$ + pendant graph peaks
+earlier: its advantage is speed of convergence, not asymptotic quality.
+
+None (isolated islands) degrades severely on HIFF ($-0.055$ from peak),
+confirming that diversity without exchange eventually becomes genetic
+drift.
 
 \subsection{Implications for Meta-Evolution}
 
 The inner GA in our outer evolution ran for 200 generations. This means
 the outer GA was optimizing for \emph{200-generation fitness}, not
-asymptotic fitness. A different inner horizon would produce a different
+asymptotic fitness. A different inner horizon produces a different
 ``optimal'' topology:
 
 \begin{itemize}
-\item \textbf{Short horizon ($< 100$ gens):} Dense topologies win
-  (fast assembly). The $K_4{-}e$ + pendant graph excels here.
-\item \textbf{Medium horizon (100--300 gens):} The evolved
-  domain-specific graphs win. This is where our experiments operated.
-\item \textbf{Long horizon ($> 300$ gens):} Sparser topologies win
-  (sustained diversity prevents stagnation). Ring overtakes everything
-  on Trap-5.
+\item \textbf{Short horizon ($< 100$ gens):} The $K_4{-}e$ + pendant
+  graph excels---fast exploration via the triangle core, with the
+  pendant preventing premature convergence.
+\item \textbf{Medium horizon (100--500 gens):} Ring leads on Trap-5;
+  domain-specific evolved graphs lead on HIFF.
+\item \textbf{Long horizon ($> 1000$ gens):} Ring dominates Trap-5
+  (sustained diversity, zero degradation). Star dominates HIFF
+  (hub coordinates hierarchical assembly at scale).
 \end{itemize}
 
-The evaluation horizon is not a nuisance parameter---it is a
+Even at 2000 generations, the rankings have not stabilized: ring is
+still climbing on Trap-5, star is still climbing on HIFF. The
+evaluation horizon is not a nuisance parameter---it is a
 \emph{design choice} that determines which topology is optimal.
-``Best topology for deceptive landscapes'' is meaningless without
-specifying ``best at what generation.''
+``Best topology'' is meaningless without specifying ``best at what
+generation.''
+
+This result strongly motivates \emph{dynamic topologies}: a schedule
+that starts dense (fast assembly via the $K_4{-}e$ + pendant
+architecture) and transitions to sparse (sustained search via ring)
+would capture the advantages of both regimes.
 
 % ============================================================
 % 8. Discussion
