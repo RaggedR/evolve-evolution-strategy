@@ -43,17 +43,19 @@ We ask: does the \emph{fitness} ordering also depend only on topology?
 We test five deceptive domains---Goldberg traps, HIFF, MMDP, and
 overlapping traps---and find that while the diversity ordering is
 preserved universally, the fitness ordering \emph{inverts}: on traps
-fully connected wins; on HIFF ring/random win; on MMDP and overlapping
-traps intermediate topologies win. The diversity ordering is a
-structural invariant; the fitness ordering is not.
+fully connected wins early; on HIFF ring/random win; on MMDP and
+overlapping traps intermediate topologies win. The diversity ordering
+is a structural invariant; the fitness ordering is not.
 
-We then evolve the migration graph itself using an outer genetic
-algorithm. Across three of five domains, the outer GA independently
-converges to the \emph{same graph}: $K_4 - e$ plus a pendant vertex
-(6 edges, $\lambda_2 = 0.83$, degree sequence $\{1,2,3,3,3\}$).
-This graph---a dense triangle core with a semi-isolated diversity
-reservoir---outperforms all canonical topologies and emerges as a
-universal architecture for deceptive landscapes.
+We evolve the migration graph using an outer GA. At 200 inner
+generations, three of five domains converge to the same graph:
+$K_4 - e$ plus a pendant vertex ($\lambda_2 = 0.83$, degree
+sequence $\{1,2,3,3,3\}$). However, convergence profiles reveal
+that the optimal topology is \emph{time-dependent}: the $K_4 - e$
++ pendant graph leads in early generations (fast exploration), but
+sparser topologies overtake it by generation 400+ (sustained
+search). ``Best topology'' is meaningless without specifying the
+evaluation horizon.
 \end{abstract}
 
 % ============================================================
@@ -81,25 +83,30 @@ on deceptive landscapes, where the fitness gradient systematically
 misleads search?
 
 % Our contribution
-We make three contributions:
+We make four contributions:
 
 \begin{enumerate}
 \item \textbf{Fitness inversion.} On deceptive landscapes, the fitness
-  ordering inverts: more connectivity helps rather than hurts, because
-  building block assembly dominates over diversity preservation.
-  Five deceptive domains produce four distinct fitness orderings while
-  the diversity ordering remains canonical (Section~\ref{sec:inversion}).
+  ordering is domain-dependent: five deceptive domains produce four
+  distinct fitness orderings while the diversity ordering remains
+  canonical (Section~\ref{sec:inversion}).
 
 \item \textbf{Evolved migration graphs.} An outer GA evolving the
   migration topology discovers that moderate connectivity with
-  structural asymmetry outperforms all canonical topologies
+  structural asymmetry outperforms canonical topologies at the
+  evaluation horizon used during evolution
   (Section~\ref{sec:evolving}).
 
-\item \textbf{A universal topology.} The outer GA independently
+\item \textbf{Convergent evolution.} The outer GA independently
   converges to the same graph---$K_4 - e$ plus a pendant vertex---on
-  three of five domains. This is the first identification of a
-  universal migration architecture for deceptive landscapes
-  (Section~\ref{sec:universal}).
+  three of five domains. Verified by exhaustive isomorphism check
+  over $5! = 120$ relabelings (Section~\ref{sec:universal}).
+
+\item \textbf{Time-dependent optimality.} The ``best'' topology
+  depends on the evaluation horizon. The evolved graph leads in early
+  generations but is overtaken by sparser topologies at longer
+  horizons. Different topologies peak at different generations
+  (Section~\ref{sec:time}).
 \end{enumerate}
 
 % ============================================================
@@ -163,7 +170,13 @@ Shared bits create inter-block epistasis.
 5 islands, population 100 (20 per island), tournament selection ($k=3$),
 one-point crossover (rate 0.8), bit-flip mutation (rate $1/L$),
 migration every 5 generations (rate 0.05), 30 seeds per condition.
-200 generations for trap domains, 300 for HIFF.
+
+\textbf{Note on evaluation horizon.} Our initial sweeps used 200
+generations for traps and 300 for HIFF. We later discovered that
+topology rankings change with longer runs (Section~\ref{sec:time}).
+The fitness orderings in Table~\ref{tab:fitness-ordering} reflect the
+200/300-generation horizon; Table~\ref{tab:convergence} shows how
+these orderings shift at 500 generations.
 
 \subsection{Results}
 
@@ -232,8 +245,13 @@ Overlap  & 6 & 0.83 & 0.837 & Ring: 0.845   & $-0.008$ \\
 \end{tabular}
 \end{table}
 
-\textbf{TODO:} Discussion of why evolved graph sometimes loses on
-30-seed comparison (noisy inner fitness with 5 seeds).
+The inner GA used to evaluate each graph ran for 200 generations (300
+for HIFF). This evaluation horizon is a critical parameter: the
+evolved graphs are optimal \emph{at this horizon}, but not necessarily
+at longer horizons (Section~\ref{sec:time}). On MMDP and overlapping
+traps, the evolved graph slightly underperforms the best canonical
+topology on 30-seed comparison, likely due to a combination of noisy
+inner fitness (5 seeds per evaluation) and the horizon mismatch.
 
 % ============================================================
 % 5. The Universal Topology
@@ -333,7 +351,101 @@ count. Evolved graphs at $n = 8$ maintain $\sim$50\% edge density
 and heterogeneous degree distribution.
 
 % ============================================================
-% 7. Discussion
+% 7. Time-Dependent Optimality
+% ============================================================
+
+\section{Time-Dependent Optimality}
+\label{sec:time}
+
+The evolved graphs were optimized with a 200-generation inner GA.
+But is 200 generations the right horizon? We tracked fitness over
+500 generations for six topologies on Trap-5 and HIFF (15 seeds each).
+
+\subsection{Topology Rankings Shift Over Time}
+
+\begin{table}[h]
+\caption{Best fitness by topology at different generations (Trap-5,
+  15 seeds). Bold = best at that generation.}
+\label{tab:convergence}
+\centering
+\small
+\begin{tabular}{rcccccc}
+\toprule
+\textbf{Gen} & \textbf{$K_4{-}e{+}$p} & \textbf{Trap-5 ev.} & \textbf{HIFF ev.} & \textbf{FC} & \textbf{Ring} & \textbf{None} \\
+\midrule
+ 25  & \textbf{0.849} & 0.844 & 0.829 & 0.848 & 0.837 & 0.812 \\
+ 50  & 0.881 & 0.892 & 0.872 & \textbf{0.895} & 0.883 & 0.847 \\
+100  & 0.899 & \textbf{0.909} & 0.899 & 0.907 & 0.908 & 0.856 \\
+200  & 0.900 & \textbf{0.920} & 0.911 & 0.907 & 0.913 & 0.853 \\
+300  & 0.904 & 0.916 & 0.913 & 0.907 & \textbf{0.919} & 0.851 \\
+500  & 0.904 & 0.919 & 0.920 & 0.908 & \textbf{0.924} & 0.855 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+On Trap-5: the $K_4{-}e$ + pendant graph leads at generation~25
+(fast exploration), but \textbf{ring overtakes all topologies by
+generation~300} and reaches 0.924 at generation~500. FC peaks early
+and stagnates. The graph we evolved for Trap-5 (optimized at the
+200-generation horizon) performs well at generation~200 but is not
+the long-run winner.
+
+On HIFF: the pattern is similar but more extreme. The $K_4{-}e$ +
+pendant leads through generation~100, but the sparser HIFF-evolved
+graph ($\lambda_2 = 0.52$) overtakes it by generation~300 and reaches
+0.815 at generation~500.
+
+\subsection{Different Graphs Peak at Different Times}
+
+\begin{table}[h]
+\caption{Generation at which each topology reaches peak fitness
+  (Trap-5 / HIFF).}
+\label{tab:peaks}
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Topology} & \textbf{Trap-5 peak} & \textbf{Trap-5 val} & \textbf{HIFF peak} & \textbf{HIFF val} \\
+\midrule
+$K_4{-}e$ + pendant  & 229 & 0.907 & 425 & 0.792 \\
+FC                   & 410 & 0.911 & 348 & 0.762 \\
+Ring                 & 421 & 0.925 & 476 & 0.799 \\
+HIFF evolved         & 453 & 0.923 & 482 & 0.818 \\
+None                 & 383 & 0.863 & 428 & 0.709 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+On HIFF, FC peaks earliest (generation~348) and then degrades---exactly
+the over-mixing effect where aggressive migration destroys hierarchical
+building blocks. Sparser topologies peak later but reach higher
+fitness. The $K_4{-}e$ + pendant graph is a \emph{fast starter}: it
+provides the best early-generation performance but is not the
+asymptotic winner.
+
+\subsection{Implications for Meta-Evolution}
+
+The inner GA in our outer evolution ran for 200 generations. This means
+the outer GA was optimizing for \emph{200-generation fitness}, not
+asymptotic fitness. A different inner horizon would produce a different
+``optimal'' topology:
+
+\begin{itemize}
+\item \textbf{Short horizon ($< 100$ gens):} Dense topologies win
+  (fast assembly). The $K_4{-}e$ + pendant graph excels here.
+\item \textbf{Medium horizon (100--300 gens):} The evolved
+  domain-specific graphs win. This is where our experiments operated.
+\item \textbf{Long horizon ($> 300$ gens):} Sparser topologies win
+  (sustained diversity prevents stagnation). Ring overtakes everything
+  on Trap-5.
+\end{itemize}
+
+The evaluation horizon is not a nuisance parameter---it is a
+\emph{design choice} that determines which topology is optimal.
+``Best topology for deceptive landscapes'' is meaningless without
+specifying ``best at what generation.''
+
+% ============================================================
+% 8. Discussion
 % ============================================================
 
 \section{Discussion}
@@ -369,13 +481,24 @@ for balancing these two forces.
 \subsection{Limitations}
 
 \begin{itemize}
-\item Inner GA fitness is noisy (5 seeds per evaluation). The evolved
-  graph sometimes loses to canonical topologies on 30-seed comparison
-  (MMDP, overlapping traps).
-\item Only $n = 5$ and $n = 8$ islands tested. The isomorphism result
-  is specific to $n = 5$.
-\item Binary adjacency genomes cannot express directed or weighted
-  edges, which might help on epistatic domains.
+\item \textbf{Horizon dependence.} The evolved graphs are optimal at
+  the 200-generation inner horizon. At 500 generations, ring
+  overtakes the evolved graphs on Trap-5. The ``universal topology''
+  is universal at a specific time scale.
+\item \textbf{Noisy inner fitness.} 5 inner seeds per evaluation
+  creates noisy fitness estimates. The evolved graph sometimes loses
+  to canonical topologies on 30-seed comparison (MMDP, overlapping
+  traps).
+\item \textbf{Scale.} The isomorphism result is specific to $n = 5$.
+  At $n = 8$ (268M possible graphs), we observe consistent structural
+  features but have not confirmed isomorphism across domains.
+\item \textbf{Graph genome.} Binary adjacency vectors cannot express
+  directed edges, weighted edges, or time-varying topologies---all of
+  which might improve performance.
+\item \textbf{Honest landscapes.} On OneMax, all topologies perform
+  identically (every seed solves the problem). The evolved topology
+  is specific to deceptive landscapes; its performance on hard honest
+  domains is untested.
 \end{itemize}
 
 % ============================================================
@@ -392,9 +515,24 @@ Goldilocks zone depending on the deception type.
 An outer GA evolving the migration graph discovers $K_4 - e$ + pendant
 independently on three of five deceptive domains---a moderately
 connected, asymmetric graph with a triangle core and a pendant
-diversity reservoir. This is, to our knowledge, the first
-identification of a universal migration architecture and the first
-application of meta-evolution to the island-model topology.
+diversity reservoir. This convergent evolution across qualitatively
+different deceptive landscapes (flat traps, multimodal deception,
+inter-block epistasis) is, to our knowledge, the first identification
+of a preferred migration architecture for deceptive landscapes.
+
+However, the ``best'' topology is time-dependent. The $K_4 - e$ +
+pendant graph excels in early generations (fast exploration), but
+sparser topologies overtake it at longer horizons (sustained search).
+The evaluation horizon used during meta-evolution is not a nuisance
+parameter but a design choice that determines which topology is
+optimal. This suggests that the real solution is not a fixed graph
+but a \emph{dynamic} topology---one that adapts its connectivity
+over the course of evolution, dense early and sparse late.
+
+The central finding is a separation of concerns: $\lambda_2$
+determines diversity (a structural invariant), graph \emph{shape}
+determines short-horizon fitness (the convergent $K_4 - e$ + pendant),
+and the evaluation horizon determines which of these matters more.
 
 % ============================================================
 % References
