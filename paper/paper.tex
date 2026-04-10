@@ -495,6 +495,61 @@ None (isolated islands) degrades severely on HIFF ($-0.055$ from peak),
 confirming that diversity without exchange eventually becomes genetic
 drift.
 
+\subsection{Mechanistic Decomposition: $\beta_1$ and $\lambda_2$ as Independent Invariants}
+\label{sec:bridge}
+
+The time-dependent results above describe \emph{what} changes over generations;
+the following controlled experiment identifies \emph{why}.
+
+We constructed two iso-spectral graph families for 8-island topologies:
+
+\begin{itemize}
+\item \textbf{Ring family:} $C_8$ plus 0--3 antipodal chords.
+  $\lambda_2$ held constant at $2 - \sqrt{2} \approx 0.586$;
+  $\beta_1$ varies from 1 to 4.
+\item \textbf{Star family:} $S_8$ plus 0--3 leaf--leaf edges.
+  $\lambda_2 = 1.0$ (constant); $\beta_1$ varies from 0 to 3.
+\end{itemize}
+
+Within each family, any observed effect on diversity is attributable to
+$\beta_1$ alone---$\lambda_2$ is held fixed. Across families, $\beta_1$
+is held fixed while $\lambda_2$ varies, isolating the spectral effect.
+
+\textbf{Results (320 runs, NK landscape $K = 4$):}
+
+\begin{table}[h]
+\caption{Effect sizes ($\eta^2$) for $\beta_1$ and $\lambda_2$ on diversity at three
+  generations. Within-family variation isolates $\beta_1$; cross-family
+  variation isolates $\lambda_2$.}
+\label{tab:bridge}
+\centering
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Invariant} & \textbf{Gen 100} & \textbf{Gen 200} & \textbf{Gen 500} \\
+\midrule
+$\beta_1$ (cycle rank) & 0.191 & 0.162 & $\approx 0$ (n.s.) \\
+$\lambda_2$ (spectral gap) & --- & 0.260 & 0.260 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Cycle rank $\beta_1$ produces a \emph{transient} effect: strong at
+generation~100 ($\eta^2 = 0.191$), declining by generation~200, and
+statistically indistinguishable from zero by generation~500. Algebraic
+connectivity $\lambda_2$ produces a \emph{persistent} effect: stronger
+than $\beta_1$'s peak at generation~200 ($\eta^2 = 0.26$) and
+maintained at generation~500.
+
+The two invariants are complementary, not redundant: $\beta_1$ controls
+transient recirculation of building blocks during early search;
+$\lambda_2$ controls long-run mixing rate and equilibrium diversity
+level. This provides a mechanistic explanation for the time-dependent
+fitness results: the early-generation advantage of $K_4 - e$ + pendant
+is driven by its triangle-core cycle structure (high $\beta_1$) creating
+a building-block assembly window; its equilibrium behaviour is
+determined by $\lambda_2 = 0.83$, which sits between ring ($\lambda_2
+\to 0$ at large $n$) and FC ($\lambda_2 = n/(n-1)$).
+
 \subsection{Implications for Meta-Evolution}
 
 The inner GA in our outer evolution ran for 200 generations. This means
@@ -624,6 +679,13 @@ Three levels of structure govern island-model dynamics:
   (ring dominates asymptotically on traps; the ring/star crossover at
   $n = 7$ on HIFF confirms the spectral prediction extends to fitness).
 \end{enumerate}
+
+Iso-spectral bridge experiments (320 runs) decompose the time-dependence
+mechanistically: $\beta_1$ (cycle rank) governs a transient diversity
+window peaking at generation~100 ($\eta^2 = 0.191$) and collapsing by
+generation~500; $\lambda_2$ governs equilibrium diversity with
+$\eta^2 = 0.26$ at generation~200, persisting to generation~500.
+The two invariants operate on independent timescales.
 On honest landscapes, none of these levels differentiates topologies---the
 fitness spread is $< 0.004$. The entire phenomenon is specific to
 deception.
